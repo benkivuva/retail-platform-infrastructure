@@ -78,3 +78,40 @@ module "bigquery" {
     }
   }
 }
+
+# --- IAM Module ---
+module "iam" {
+  source = "../../modules/iam"
+
+  project_id  = var.project_id
+  environment = "dev"
+
+  service_accounts = {
+    "dagster-runner" = {
+      display_name = "Dagster Orchestrator"
+      description  = "Service account used by Dagster to run dbt models and load data"
+      project_roles = [
+        "roles/bigquery.dataEditor",
+        "roles/bigquery.jobUser",
+        "roles/storage.objectAdmin"
+      ]
+    }
+    "flask-app" = {
+      display_name = "Flask Dashboard"
+      description  = "Service account used by the Flask application to read data"
+      project_roles = [
+        "roles/bigquery.dataViewer",
+        "roles/bigquery.jobUser"
+      ]
+    }
+    "ai-assistant" = {
+      display_name = "AI Assistant"
+      description  = "Service account used by the AI assistant to query AI views and access secrets"
+      project_roles = [
+        "roles/bigquery.dataViewer",
+        "roles/bigquery.jobUser",
+        "roles/secretmanager.secretAccessor"
+      ]
+    }
+  }
+}
