@@ -137,4 +137,9 @@ module "gke" {
   master_ipv4_cidr_block = "172.16.0.0/28"
 
   node_service_account_email = module.iam.service_account_emails["gke-nodes"]
+
+  master_authorized_cidrs = [
+    { cidr_block = "10.0.0.0/20",       display_name = "vpc-subnet" },
+    { cidr_block = "105.160.99.225/32", display_name = "my-workstation" },
+  ]
 }

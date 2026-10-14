@@ -10,8 +10,8 @@ resource "google_container_cluster" "cluster" {
   subnetwork = var.subnet_name
 
   ip_allocation_policy {
-  cluster_secondary_range_name  = "pods"
-  services_secondary_range_name = "services"
+    cluster_secondary_range_name  = "pods"
+    services_secondary_range_name = "services"
   }
 
   private_cluster_config {
@@ -21,13 +21,12 @@ resource "google_container_cluster" "cluster" {
   }
 
   master_authorized_networks_config {
-    cidr_blocks {
-      cidr_block   = "10.0.0.0/20"
-      display_name = "vpc-subnet"
-    }
-    cidr_blocks {
-      cidr_block   = "105.160.99.225/32"
-      display_name = "my-workstation"
+    dynamic "cidr_blocks" {
+      for_each = var.master_authorized_cidrs
+      content {
+        cidr_block   = cidr_blocks.value.cidr_block
+        display_name = cidr_blocks.value.display_name
+      }
     }
   }
 
@@ -63,13 +62,12 @@ resource "google_container_cluster" "cluster" {
 resource "google_container_node_pool" "standard" {
   name       = "${var.environment}-standard-pool"
   cluster    = google_container_cluster.cluster.id
-  node_count = 1
 
   autoscaling {
-  total_min_node_count = 1
-  total_max_node_count = 3
-  location_policy      = "ANY"
-}
+    total_min_node_count = var.standard_min_nodes
+    total_max_node_count = var.standard_max_nodes
+    location_policy      = "ANY"
+  }
 
   management {
     auto_repair  = true
@@ -77,8 +75,8 @@ resource "google_container_node_pool" "standard" {
   }
 
   node_config {
-    machine_type    = "e2-medium"
-    disk_size_gb    = 50
+    machine_type    = var.standard_machine_type
+    disk_size_gb    = var.standard_disk_size_gb
     disk_type       = "pd-standard"
     image_type      = "COS_CONTAINERD"
     service_account = var.node_service_account_email
@@ -108,9 +106,9 @@ resource "google_container_node_pool" "spot" {
   cluster = google_container_cluster.cluster.id
 
   autoscaling {
-    min_node_count  = 0
-    max_node_count  = 5
-    location_policy = "ANY"
+    total_min_node_count = var.spot_min_nodes
+    total_max_node_count = var.spot_max_nodes
+    location_policy      = "ANY"
   }
 
   management {
@@ -119,8 +117,8 @@ resource "google_container_node_pool" "spot" {
   }
 
   node_config {
-    machine_type    = "e2-small"
-    disk_size_gb    = 30
+    machine_type    = var.spot_machine_type
+    disk_size_gb    = var.spot_disk_size_gb
     disk_type       = "pd-standard"
     image_type      = "COS_CONTAINERD"
     spot            = true
