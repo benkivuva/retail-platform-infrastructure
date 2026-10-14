@@ -1,4 +1,3 @@
-# Create the GCP Service Accounts
 resource "google_service_account" "service_accounts" {
   for_each = var.service_accounts
 
@@ -8,7 +7,6 @@ resource "google_service_account" "service_accounts" {
   project      = var.project_id
 }
 
-# Bind Project-Level IAM Roles to the Service Accounts
 locals {
   sa_roles = flatten([
     for sa_key, sa in var.service_accounts : [

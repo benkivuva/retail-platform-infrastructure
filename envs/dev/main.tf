@@ -36,7 +36,7 @@ module "gcs" {
     "temp-processing" = {
       name_suffix        = "temp-processing"
       versioning_enabled = false
-      lifecycle_age_days = 1      # Temp files vanish after a day
+      lifecycle_age_days = 1
       storage_class      = "STANDARD"
     }
   }
@@ -54,7 +54,7 @@ module "bigquery" {
     "raw" = {
       description                = "Raw data loaded from source systems. Never modified. Pristine for reproducibility."
       default_table_expiry       = 0
-      delete_contents_on_destroy = true # Dev only: allow clean teardown
+      delete_contents_on_destroy = true
     }
     "staging" = {
       description                = "Cleaned, typed, and renamed data. One model per source table."
@@ -113,5 +113,28 @@ module "iam" {
         "roles/secretmanager.secretAccessor"
       ]
     }
+    "gke-nodes" = {
+      display_name = "GKE Node Service Account"
+      description  = "Minimal SA for GKE node VMs. Not used by pods."
+      project_roles = [
+        "roles/logging.logWriter",
+        "roles/monitoring.metricWriter",
+        "roles/artifactregistry.reader"
+      ]
+    }
   }
+}
+
+# --- GKE Module ---
+module "gke" {
+  source = "../../modules/gke"
+
+  project_id             = var.project_id
+  region                 = var.region
+  environment            = "dev"
+  network_name           = module.networking.network_name
+  subnet_name            = module.networking.subnet_name
+  master_ipv4_cidr_block = "172.16.0.0/28"
+
+  node_service_account_email = module.iam.service_account_emails["gke-nodes"]
 }

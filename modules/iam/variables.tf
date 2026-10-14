@@ -13,6 +13,6 @@ variable "service_accounts" {
   type = map(object({
     display_name = string
     description  = string
-    project_roles = list(string) # Roles applied at the project level
+    project_roles = list(string)
   }))
 }
