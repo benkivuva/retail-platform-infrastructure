@@ -122,13 +122,23 @@ module "iam" {
         "roles/artifactregistry.reader"
       ]
     }
+    # NOTE: This SA runs Terraform for the whole stack, so it needs broad
+    # service-level admin roles. In a larger org, you would split this into
+    # multiple runners (infra, data, apps) each with narrower scope.
     "ci-runner" = {
-      display_name  = "GitHub Actions CI Runner"
-      description   = "Service account assumed by GitHub Actions via Workload Identity Federation"
-      project_roles = [
-        "roles/editor"
-      ]
-    }
+       display_name  = "GitHub Actions CI Runner"
+       description   = "Service account assumed by GitHub Actions via Workload Identity Federation"
+        project_roles = [
+    "roles/compute.admin",
+    "roles/container.admin",
+    "roles/iam.serviceAccountAdmin",
+    "roles/resourcemanager.projectIamAdmin",
+    "roles/storage.admin",
+    "roles/bigquery.admin",
+    "roles/secretmanager.admin",
+    "roles/iam.workloadIdentityPoolAdmin"
+  ]
+}
   }
 }
 
