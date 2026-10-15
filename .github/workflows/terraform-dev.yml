@@ -13,7 +13,7 @@ permissions:
   id-token: write
 
 env:
-  TF_VERSION: '1.16.5'
+  TF_VERSION: '1.16.5'   # Match local version for parity
 
 jobs:
   plan:
@@ -21,9 +21,20 @@ jobs:
     defaults:
       run:
         working-directory: envs/dev
+    env:
+      # Terraform reads these automatically as var.project_id and var.github_repo
+      TF_VAR_project_id: ${{ secrets.GCP_PROJECT_ID }}
+      TF_VAR_github_repo: ${{ secrets.GCP_GITHUB_REPO }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Verify required env vars
+        run: |
+          [ -n "$TF_VAR_project_id" ] || (echo "TF_VAR_project_id is empty" && exit 1)
+          [ -n "$TF_VAR_github_repo" ] || (echo "TF_VAR_github_repo is empty" && exit 1)
+          echo "TF_VAR_project_id = $TF_VAR_project_id"
+          echo "TF_VAR_github_repo = $TF_VAR_github_repo"
 
       - name: Authenticate to GCP
         uses: google-github-actions/auth@v2
@@ -56,9 +67,12 @@ jobs:
         with:
           script: |
             const output = `#### Terraform Plan 📖
+
             \`\`\`
             ${process.env.PLAN}
-            \`\`\``;
+            \`\`\`
+
+            *Triggered by PR #${context.issue.number}*`;
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
