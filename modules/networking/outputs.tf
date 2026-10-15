@@ -12,3 +12,8 @@ output "subnet_name" {
   value       = google_compute_subnetwork.subnet.name
   description = "The name of the subnet"
 }
+
+output "nat_name" {
+  value       = google_compute_router_nat.nat.name
+  description = "The name of the Cloud NAT"
+}

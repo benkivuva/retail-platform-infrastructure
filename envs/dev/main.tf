@@ -126,19 +126,19 @@ module "iam" {
     # service-level admin roles. In a larger org, you would split this into
     # multiple runners (infra, data, apps) each with narrower scope.
     "ci-runner" = {
-       display_name  = "GitHub Actions CI Runner"
-       description   = "Service account assumed by GitHub Actions via Workload Identity Federation"
-        project_roles = [
-    "roles/compute.admin",
-    "roles/container.admin",
-    "roles/iam.serviceAccountAdmin",
-    "roles/resourcemanager.projectIamAdmin",
-    "roles/storage.admin",
-    "roles/bigquery.admin",
-    "roles/secretmanager.admin",
-    "roles/iam.workloadIdentityPoolAdmin"
-  ]
-}
+      display_name = "GitHub Actions CI Runner"
+      description  = "Service account assumed by GitHub Actions via Workload Identity Federation"
+      project_roles = [
+        "roles/compute.admin",
+        "roles/container.admin",
+        "roles/iam.serviceAccountAdmin",
+        "roles/resourcemanager.projectIamAdmin",
+        "roles/storage.admin",
+        "roles/bigquery.admin",
+        "roles/secretmanager.admin",
+        "roles/iam.workloadIdentityPoolAdmin"
+      ]
+    }
   }
 }
 
@@ -157,6 +157,6 @@ module "gke" {
 
   master_authorized_cidrs = [
     { cidr_block = "10.0.0.0/20",       display_name = "vpc-subnet" },
-    { cidr_block = "105.160.91.204/32", display_name = "my-workstation" },
+    { cidr_block = "105.161.226.38/32", display_name = "my-workstation" },
   ]
 }
