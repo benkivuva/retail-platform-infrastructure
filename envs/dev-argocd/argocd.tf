@@ -16,7 +16,6 @@ resource "helm_release" "argocd" {
     value = "ClusterIP"
   }
 
-  # Don't block Terraform waiting for pods — they pull images slowly on first install
   wait            = false
   timeout         = 600
   cleanup_on_fail = true
