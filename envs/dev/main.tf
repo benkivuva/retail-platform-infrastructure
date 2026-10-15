@@ -122,6 +122,13 @@ module "iam" {
         "roles/artifactregistry.reader"
       ]
     }
+    "ci-runner" = {
+      display_name  = "GitHub Actions CI Runner"
+      description   = "Service account assumed by GitHub Actions via Workload Identity Federation"
+      project_roles = [
+        "roles/editor"
+      ]
+    }
   }
 }
 
