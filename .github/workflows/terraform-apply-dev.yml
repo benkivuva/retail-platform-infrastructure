@@ -1,0 +1,57 @@
+name: Terraform Apply (dev)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'envs/dev/**'
+      - 'modules/**'
+      - '.github/workflows/terraform-apply-dev.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  TF_VERSION: '1.16.5'
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    environment: dev-apply
+    defaults:
+      run:
+        working-directory: envs/dev
+    env:
+      TF_VAR_project_id: ${{ secrets.GCP_PROJECT_ID }}
+      TF_VAR_github_repo: ${{ secrets.GCP_GITHUB_REPO }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_CI_SA }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - name: Terraform init
+        run: terraform init -input=false
+
+      - name: Terraform validate
+        run: terraform validate -no-color
+
+      - name: Terraform plan
+        run: terraform plan -input=false -no-color -lock-timeout=60s -out=tfplan
+
+      - name: Terraform apply
+        run: terraform apply -input=false -no-color -auto-approve tfplan
