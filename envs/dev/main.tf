@@ -136,7 +136,8 @@ module "iam" {
         "roles/storage.admin",
         "roles/bigquery.admin",
         "roles/secretmanager.admin",
-        "roles/iam.workloadIdentityPoolAdmin"
+        "roles/iam.workloadIdentityPoolAdmin",
+        "roles/artifactregistry.admin"
       ]
     }
   }
