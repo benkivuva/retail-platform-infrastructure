@@ -160,3 +160,12 @@ module "gke" {
     { cidr_block = "105.160.32.16/32", display_name = "my-workstation" },
   ]
 }
+
+# --- Artifact Registry Module ---
+module "artifact_registry" {
+  source = "../../modules/artifact_registry"
+
+  project_id  = var.project_id
+  region      = var.region
+  environment = "dev"
+}
