@@ -21,18 +21,33 @@ resource "google_iam_workload_identity_pool_provider" "github" {
     "attribute.ref"        = "assertion.ref"
   }
 
-  attribute_condition = "assertion.repository == '${var.github_repo}'"
+  # Allow both the infra repo and the app repo
+  attribute_condition = "assertion.repository == 'benkivuva/retail-platform-infrastructure' || assertion.repository == 'benkivuva/retail-data-platform'"
 
   oidc {
     issuer_uri = "https://token.actions.githubusercontent.com"
   }
 }
 
-# Allow workflows from our repo to impersonate the ci-runner SA
+# Define both repos that need access
+locals {
+  github_repos = ["benkivuva/retail-platform-infrastructure", "benkivuva/retail-data-platform"]
+}
+
+# 1. Allow workflows from BOTH repos to act as the ci-runner SA
 resource "google_service_account_iam_member" "ci_runner_wif" {
+  for_each           = toset(local.github_repos)
   service_account_id = module.iam.service_account_names["ci-runner"]
   role               = "roles/iam.workloadIdentityUser"
-  member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github.name}/attribute.repository/${var.github_repo}"
+  member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github.name}/attribute.repository/${each.value}"
+}
+
+# 2. Allow workflows from BOTH repos to generate tokens for the ci-runner SA
+resource "google_service_account_iam_member" "ci_runner_token_creator" {
+  for_each           = toset(local.github_repos)
+  service_account_id = module.iam.service_account_names["ci-runner"]
+  role               = "roles/iam.serviceAccountTokenCreator"
+  member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github.name}/attribute.repository/${each.value}"
 }
 
 output "wif_provider_full_id" {
