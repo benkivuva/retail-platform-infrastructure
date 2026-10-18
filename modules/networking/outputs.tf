@@ -17,3 +17,8 @@ output "nat_name" {
   value       = google_compute_router_nat.nat.name
   description = "The name of the Cloud NAT"
 }
+
+output "network_id" {
+  value       = google_compute_network.vpc.id
+  description = "The ID of the VPC network"
+}

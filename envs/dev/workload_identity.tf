@@ -25,3 +25,10 @@ resource "google_service_account_iam_member" "ai_ksa_binding" {
 
   depends_on = [module.gke]
 }
+
+# Bind ESO KSA to the eso-reader GSA
+resource "google_service_account_iam_member" "eso_ksa_binding" {
+  service_account_id = module.iam.service_account_names["eso-reader"]
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "serviceAccount:${var.project_id}.svc.id.goog[external-secrets/external-secrets]"
+}

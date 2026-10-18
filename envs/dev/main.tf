@@ -122,6 +122,11 @@ module "iam" {
         "roles/artifactregistry.reader"
       ]
     }
+    "eso-reader" = {
+      display_name  = "External Secrets Operator"
+      description   = "Reads secrets from GCP Secret Manager"
+      project_roles = ["roles/secretmanager.secretAccessor"]
+    }
     # NOTE: This SA runs Terraform for the whole stack, so it needs broad
     # service-level admin roles. In a larger org, you would split this into
     # multiple runners (infra, data, apps) each with narrower scope.
@@ -142,7 +147,6 @@ module "iam" {
     }
   }
 }
-
 # --- GKE Module ---
 module "gke" {
   source = "../../modules/gke"
@@ -158,7 +162,7 @@ module "gke" {
 
   master_authorized_cidrs = [
     { cidr_block = "10.0.0.0/20",       display_name = "vpc-subnet" },
-    { cidr_block = "196.96.118.248/32", display_name = "my-workstation" },
+    { cidr_block = "196.96.86.104/32", display_name = "my-workstation" },
   ]
 }
 
@@ -169,4 +173,30 @@ module "artifact_registry" {
   project_id  = var.project_id
   region      = var.region
   environment = "dev"
+}
+
+# --- Cloud SQL Module ---
+module "cloudsql" {
+  source = "../../modules/cloudsql"
+
+  project_id  = var.project_id
+  region      = var.region
+  environment = "dev"
+  network_id  = module.networking.network_id
+}
+
+output "db_name" {
+  value = module.cloudsql.db_name
+}
+
+output "db_user" {
+  value = module.cloudsql.db_user
+}
+
+output "db_private_ip" {
+  value = module.cloudsql.private_ip_address
+}
+
+output "db_connection_name" {
+  value = module.cloudsql.connection_name
 }
