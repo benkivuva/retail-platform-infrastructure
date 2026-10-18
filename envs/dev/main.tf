@@ -143,7 +143,8 @@ module "iam" {
         "roles/secretmanager.admin",
         "roles/iam.workloadIdentityPoolAdmin",
         "roles/artifactregistry.admin",
-        "roles/servicenetworking.networksAdmin"
+        "roles/servicenetworking.networksAdmin",
+        "roles/cloudsql.admin"
       ]
     }
   }
