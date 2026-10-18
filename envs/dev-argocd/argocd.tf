@@ -32,5 +32,11 @@ resource "helm_release" "external_secrets" {
   chart            = "external-secrets"
   namespace        = "external-secrets"
   create_namespace = true
-  version          = "0.9.11" # Stable version
+  version          = "0.9.11"
+
+  # Add the annotation to the service account
+  set {
+    name  = "serviceAccount.annotations.iam\\.gke\\.io/gcp-service-account"
+    value = "dev-eso-reader@retail-data-platform-511008.iam.gserviceaccount.com"
+  }
 }

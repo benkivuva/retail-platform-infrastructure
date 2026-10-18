@@ -75,3 +75,18 @@ resource "google_sql_user" "users" {
   instance = google_sql_database_instance.instance.name
   password = random_password.db_password.result
 }
+
+# 8. Create the Dagster Database
+resource "google_sql_database" "dagster_db" {
+  project  = var.project_id
+  name     = "dagsterdb"
+  instance = google_sql_database_instance.instance.name
+}
+
+# 9. Create the Dagster Database User
+resource "google_sql_user" "dagster_user" {
+  project  = var.project_id
+  name     = "dagsteruser"
+  instance = google_sql_database_instance.instance.name
+  password = random_password.db_password.result
+}

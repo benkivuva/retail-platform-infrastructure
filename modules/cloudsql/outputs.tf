@@ -20,3 +20,11 @@ output "db_password" {
   value     = random_password.db_password.result
   sensitive = true
 }
+
+output "dagster_db_name" {
+  value = google_sql_database.dagster_db.name
+}
+
+output "dagster_db_user" {
+  value = google_sql_user.dagster_user.name
+}
