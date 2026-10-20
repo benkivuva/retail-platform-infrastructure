@@ -5,7 +5,7 @@ resource "helm_release" "kube_prometheus_stack" {
   namespace        = "monitoring"
   create_namespace = true
   version          = "61.3.0"
-  timeout          = 900 # Keep this to prevent timeouts
+  timeout          = 900 
 
   set {
     name  = "grafana.adminPassword"
@@ -21,19 +21,13 @@ resource "helm_release" "kube_prometheus_stack" {
     value = "256Mi"
   }
 
-  # 3. Enable Alertmanager
-  set {
-    name  = "alertmanager.enabled"
-    value = "true"
-  }
-  set {
-    name  = "alertmanager.alertmanagerSpec.resources.requests.memory"
-    value = "64Mi"
-  }
-
-  # 4. Configure the Webhook Receiver
   values = [<<EOF
 alertmanager:
+  enabled: true
+  alertmanagerSpec:
+    resources:
+      requests:
+        memory: 64Mi
   config:
     route:
       receiver: 'webhook'
@@ -42,6 +36,7 @@ alertmanager:
       group_interval: 10s
       repeat_interval: 1h
     receivers:
+      - name: 'null'
       - name: 'webhook'
         webhook_configs:
           - url: 'https://webhook.site/6bbcb582-8cb1-43ea-9a14-581f9c12c1fc'
