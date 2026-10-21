@@ -164,7 +164,7 @@ module "gke" {
 
   master_authorized_cidrs = [
     { cidr_block = "10.0.0.0/20",       display_name = "vpc-subnet" },
-    { cidr_block = "196.96.139.141/32", display_name = "my-workstation" },
+    { cidr_block = "41.81.112.227/32", display_name = "my-workstation" },
   ]
 }
 
