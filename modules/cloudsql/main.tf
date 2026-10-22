@@ -90,3 +90,17 @@ resource "google_sql_user" "dagster_user" {
   instance = google_sql_database_instance.instance.name
   password = random_password.db_password.result
 }
+# 10. Create the Backstage Database
+resource "google_sql_database" "backstage_db" {
+  project  = var.project_id
+  name     = "backstagedb"
+  instance = google_sql_database_instance.instance.name
+}
+
+# 11. Create the Backstage Database User
+resource "google_sql_user" "backstage_user" {
+  project  = var.project_id
+  name     = "backstageuser"
+  instance = google_sql_database_instance.instance.name
+  password = random_password.db_password.result
+}

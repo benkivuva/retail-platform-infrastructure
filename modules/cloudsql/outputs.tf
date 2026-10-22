@@ -28,3 +28,10 @@ output "dagster_db_name" {
 output "dagster_db_user" {
   value = google_sql_user.dagster_user.name
 }
+output "backstage_db_name" {
+  value = google_sql_database.backstage_db.name
+}
+
+output "backstage_db_user" {
+  value = google_sql_user.backstage_user.name
+}

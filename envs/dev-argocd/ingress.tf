@@ -6,9 +6,8 @@ resource "helm_release" "nginx_ingress" {
   create_namespace = true
   version          = "4.10.1"
 
-  # Bind the Nginx LoadBalancer to your specific Static IP
   set {
     name  = "controller.service.loadBalancerIP"
-    value = "34.9.98.32" 
+    value = "34.136.31.203" 
   }
 }
