@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: retail-platform-infrastructure
+  description: Terraform for GCP Infrastructure (GKE, Cloud SQL, IAM)
+  annotations:
+    github.com/project-slug: benkivuva/retail-platform-infrastructure
+spec:
+  type: infrastructure
+  lifecycle: production
+  owner: guests
+  system: retail-data-platform
